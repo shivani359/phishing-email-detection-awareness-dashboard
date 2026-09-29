@@ -1,0 +1,268 @@
+openapi: 3.1.0
+info:
+  # Do not change the title, if the title changes, the import paths will be broken
+  title: Api
+  version: 0.1.0
+  description: API specification
+servers:
+  - url: /api
+    description: Base API path
+tags:
+  - name: health
+    description: Health operations
+  - name: analysis
+    description: Defensive email analysis operations
+  - name: dashboard
+    description: Risk and security analytics
+  - name: awareness
+    description: Security awareness learning content
+paths:
+  /healthz:
+    get:
+      operationId: healthCheck
+      tags: [health]
+      summary: Health check
+      description: Returns server health status
+      responses:
+        "200":
+          description: Healthy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthStatus"
+  /analyses:
+    get:
+      operationId: listAnalyses
+      tags: [analysis]
+      summary: List recent email analyses
+      responses:
+        "200":
+          description: Recent analyses
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Analysis"
+    post:
+      operationId: createAnalysis
+      tags: [analysis]
+      summary: Analyze an email for phishing risk
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AnalysisInput"
+      responses:
+        "201":
+          description: Completed analysis
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Analysis"
+        "400":
+          description: Invalid email input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /dashboard/summary:
+    get:
+      operationId: getDashboardSummary
+      tags: [dashboard]
+      summary: Get phishing risk dashboard summary
+      responses:
+        "200":
+          description: Dashboard summary
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DashboardSummary"
+  /samples:
+    get:
+      operationId: listSampleEmails
+      tags: [analysis]
+      summary: List safe fictional training samples
+      responses:
+        "200":
+          description: Synthetic sample emails
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/SampleEmail"
+  /awareness/modules:
+    get:
+      operationId: listAwarenessModules
+      tags: [awareness]
+      summary: List phishing awareness learning modules
+      responses:
+        "200":
+          description: Awareness modules
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/AwarenessModule"
+components:
+  schemas:
+    HealthStatus:
+      type: object
+      properties:
+        status:
+          type: string
+      required:
+        - status
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+      required:
+        - error
+    Classification:
+      type: string
+      enum: [SAFE, LOW_RISK, SUSPICIOUS, HIGH_RISK]
+    UrlRisk:
+      type: string
+      enum: [CLEAN, SUSPICIOUS, MALICIOUS]
+    UrlIndicator:
+      type: object
+      properties:
+        url:
+          type: string
+        risk:
+          $ref: "#/components/schemas/UrlRisk"
+        reason:
+          type: string
+      required: [url, risk, reason]
+    AnalysisInput:
+      type: object
+      properties:
+        sender:
+          type: string
+        subject:
+          type: string
+        content:
+          type: string
+      required: [sender, subject, content]
+    Analysis:
+      type: object
+      properties:
+        id:
+          type: integer
+        createdAt:
+          type: string
+          format: date-time
+        sender:
+          type: string
+        subject:
+          type: string
+        content:
+          type: string
+        riskScore:
+          type: integer
+        classification:
+          $ref: "#/components/schemas/Classification"
+        summary:
+          type: string
+        indicators:
+          type: array
+          items:
+            type: string
+        urls:
+          type: array
+          items:
+            $ref: "#/components/schemas/UrlIndicator"
+        recommendations:
+          type: array
+          items:
+            type: string
+        modelUsed:
+          type: string
+      required:
+        - id
+        - createdAt
+        - sender
+        - subject
+        - content
+        - riskScore
+        - classification
+        - summary
+        - indicators
+        - urls
+        - recommendations
+        - modelUsed
+    ClassificationCount:
+      type: object
+      properties:
+        classification:
+          $ref: "#/components/schemas/Classification"
+        count:
+          type: integer
+      required: [classification, count]
+    DashboardSummary:
+      type: object
+      properties:
+        totalAnalyzed:
+          type: integer
+        highRiskCount:
+          type: integer
+        suspiciousCount:
+          type: integer
+        safeCount:
+          type: integer
+        averageRisk:
+          type: number
+        last24hCount:
+          type: integer
+        classificationBreakdown:
+          type: array
+          items:
+            $ref: "#/components/schemas/ClassificationCount"
+      required:
+        - totalAnalyzed
+        - highRiskCount
+        - suspiciousCount
+        - safeCount
+        - averageRisk
+        - last24hCount
+        - classificationBreakdown
+    SampleEmail:
+      type: object
+      properties:
+        id:
+          type: string
+        label:
+          type: string
+        sender:
+          type: string
+        subject:
+          type: string
+        content:
+          type: string
+      required: [id, label, sender, subject, content]
+    AwarenessModule:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        category:
+          type: string
+        level:
+          type: string
+        description:
+          type: string
+        steps:
+          type: array
+          items:
+            type: string
+        tip:
+          type: string
+      required: [id, title, category, level, description, steps, tip]
+

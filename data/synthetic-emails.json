@@ -1,0 +1,26 @@
+[
+  {
+    "id": "invoice-portal",
+    "label": "Synthetic phishing - fake invoice",
+    "sender": "billing-team@gmail.com",
+    "subject": "URGENT: Invoice review required today!!",
+    "content": "Hello team, our billing portal detected an issue with your payment. Confirm your account immediately to avoid suspension: https://secure-billing.example.net/verify",
+    "expectedClassification": "SUSPICIOUS"
+  },
+  {
+    "id": "security-alert",
+    "label": "Synthetic phishing - account alert",
+    "sender": "helpdesk@support-demo.invalid",
+    "subject": "Security alert for your mailbox",
+    "content": "We detected an unusual sign-in. Validate your mailbox within 2 hours or your access will be locked. Visit https://example.com/security to review the activity.",
+    "expectedClassification": "SUSPICIOUS"
+  },
+  {
+    "id": "campus-update",
+    "label": "Legitimate training sample",
+    "sender": "library@northbridge.example.org",
+    "subject": "Library hours for the fall term",
+    "content": "The library will close at 8 PM this Friday for scheduled maintenance. You do not need to take any action. Visit the library desk if you have questions.",
+    "expectedClassification": "SAFE"
+  }
+]

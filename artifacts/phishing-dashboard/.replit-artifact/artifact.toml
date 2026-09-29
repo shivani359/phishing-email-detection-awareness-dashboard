@@ -1,0 +1,28 @@
+kind = "web"
+previewPath = "/"
+title = "Phishing Email Detection & Awareness Dashboard"
+description = "A defensive cybersecurity workspace for analyzing synthetic email samples, explaining phishing risk, reviewing analysis history, and learning practical awareness habits."
+version = "1.0.0"
+id = "artifacts/phishing-dashboard"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 18934
+
+[services.development]
+run = "pnpm --filter @workspace/phishing-dashboard run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/phishing-dashboard", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/phishing-dashboard/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "18934"
+BASE_PATH = "/"
